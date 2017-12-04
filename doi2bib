@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+
+base_url = "http://api.crossref.org"
+
+def trim_if_url(doi)
+  s = doi.dup
+  if doi.start_with?("https://doi.org/")
+    s.slice!("https://doi.org/")
+  end
+  return s
+end
+
+for doi,i in ARGV.each_with_index
+  url = "#{base_url}/works/#{doi}/transform/application/x-bibtex"
+  doi = trim_if_url(doi)
+  begin
+    open(url) do |f|
+      bib = f.read
+      if i > 0 then puts '' end
+      puts bib
+    end
+  rescue
+    STDERR.puts "Error: Cannot find DOI #{doi}"
+    exit 1
+  end
+end
