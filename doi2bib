@@ -19,6 +19,16 @@ def remove_underscore(bib)
   return strs.join(",")
 end
 
+def unbrace_month(bib)
+   return bib.gsub(/month = {(.*)}/) {"month = #{$~[1]}"}
+end
+
+def postprocess(bib)
+   bib = remove_underscore(bib)
+   bib = unbrace_month(bib)
+   return bib
+end
+
 for doi,i in ARGV.each_with_index
   doi = trim_if_url(doi)
   url = URI.encode("#{base_url}/works/#{doi}/transform/application/x-bibtex")
@@ -26,7 +36,7 @@ for doi,i in ARGV.each_with_index
     open(url) do |f|
       bib = f.read
       if i > 0 then puts '' end
-      puts remove_underscore(bib)
+      puts postprocess(bib)
     end
   rescue => error
     puts error
