@@ -1,3 +1,6 @@
 #!/bin/sh
 
-doi2bib $1 | pbcopy
+bibentry=$(doi2bib $@)
+if [ -n "$bibentry" ]; then
+   pbcopy <<< "$bibentry"
+fi
