@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'open-uri'
+require 'openssl'
 
-base_url = "http://api.crossref.org"
+base_url = "http://dx.doi.org"
 
 def trim_if_url(doi)
   s = doi.dup
@@ -31,15 +32,17 @@ end
 
 for doi,i in ARGV.each_with_index
   doi = trim_if_url(doi)
-  url = URI.encode("#{base_url}/works/#{doi}/transform/application/x-bibtex")
+  url = URI.encode("#{base_url}/#{doi}")
   begin
-    open(url) do |f|
+    open(url,
+         "Accept" => "application/x-bibtex; charset=utf-8",
+         :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE) do |f|
       bib = f.read
       if i > 0 then puts '' end
       puts postprocess(bib)
     end
   rescue => error
-    puts error
+    STDERR.puts error
     STDERR.puts "Error: Cannot find DOI #{doi}"
     exit 1
   end
