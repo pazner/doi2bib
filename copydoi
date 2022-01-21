@@ -1,6 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
 bibentry=$(doi2bib $@)
 if [ -n "$bibentry" ]; then
-   pbcopy <<< "$bibentry"
+    if command -v pbcopy > /dev/null; then
+        pbcopy <<< "$bibentry"
+    elif command -v xclip > /dev/null; then
+        xclip -selection clipboard <<< "$bibentry"
+    elif command -v xsel > /dev/null; then
+        xsel --clipboard <<< "$bibentry"
+    else
+        echo "Could not find pbcopy nor xclip nor xsel!"
+        exit 1
+    fi
 fi
