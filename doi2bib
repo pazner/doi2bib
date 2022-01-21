@@ -30,9 +30,11 @@ def postprocess(bib)
    return bib
 end
 
+p = URI::Parser.new
+
 for doi,i in ARGV.each_with_index
   doi = trim_if_url(doi)
-  url = URI::Parser.new.escape("#{base_url}/#{doi}")
+  url = p.escape("#{base_url}/#{doi}")
   begin
     URI.open(url,
          "Accept" => "application/x-bibtex; charset=utf-8",
