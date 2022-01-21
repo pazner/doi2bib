@@ -32,9 +32,9 @@ end
 
 for doi,i in ARGV.each_with_index
   doi = trim_if_url(doi)
-  url = URI.encode("#{base_url}/#{doi}")
+  url = URI::Parser.new.escape("#{base_url}/#{doi}")
   begin
-    open(url,
+    URI.open(url,
          "Accept" => "application/x-bibtex; charset=utf-8",
          :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE) do |f|
       bib = f.read
